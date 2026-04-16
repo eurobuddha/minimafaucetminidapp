@@ -158,7 +158,17 @@
                 btn.disabled = false;
                 btn.textContent = "Request Minima";
                 try {
-                    var data = JSON.parse(res);
+                    var data;
+                    if (typeof res === "string") {
+                        data = JSON.parse(res);
+                    } else if (res && res.response) {
+                        data = (typeof res.response === "string") ? JSON.parse(res.response) : res.response;
+                    } else if (res && res.message) {
+                        data = res;
+                    } else {
+                        showStatus("Unexpected response from faucet.", false);
+                        return;
+                    }
                     showStatus(data.message, data.status);
                 } catch(e) {
                     showStatus("Failed to reach the faucet. Try again later.", false);

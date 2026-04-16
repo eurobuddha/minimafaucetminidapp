@@ -221,14 +221,20 @@
         MDS.net.GET(url, function(res) {
             btn.disabled = false;
             btn.textContent = "Request Minima";
+            MDS.log("Faucet response: " + JSON.stringify(res));
             try {
-                var data = JSON.parse(res.response);
-                if (data.status) {
-                    showStatus(data.message, true);
+                var data;
+                if (res.response) {
+                    data = (typeof res.response === "string") ? JSON.parse(res.response) : res.response;
+                } else if (res.message) {
+                    data = res;
                 } else {
-                    showStatus(data.message, false);
+                    showStatus("Unexpected response from faucet.", false);
+                    return;
                 }
+                showStatus(data.message, data.status);
             } catch(e) {
+                MDS.log("Faucet parse error: " + e + " raw: " + JSON.stringify(res));
                 showStatus("Failed to reach the faucet. Try again later.", false);
             }
         });
