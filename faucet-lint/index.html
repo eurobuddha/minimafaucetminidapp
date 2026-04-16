@@ -103,11 +103,11 @@
             <h1>Get Free Minima</h1>
             <p class="subtitle">Receive 0.0001 Minima to try out the blockchain</p>
             <div class="input-group">
-                <label>Your Minima Address</label>
-                <input type="text" id="addressInput" placeholder="0x... or Mx..." />
+                <label>Minima Address</label>
+                <input type="text" id="addressInput" placeholder="Paste an address or use button below" />
             </div>
+            <button class="btn" id="getAddrBtn" onclick="getMyAddress()" style="margin-bottom:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:rgba(232,230,227,0.55);">Get My Address</button>
             <button class="btn" id="requestBtn" onclick="requestMinima()">Request Minima</button>
-            <button class="btn" id="getAddrBtn" onclick="getMyAddress()" style="margin-top:8px;background:rgba(255,255,255,0.05);color:var(--text-dim);">Auto-fill My Address</button>
             <div class="status" id="statusBox"></div>
             <div class="info">
                 <strong>How it works:</strong> This faucet distributes a tiny amount of real Minima.
@@ -128,16 +128,28 @@
     }
 
     function getMyAddress() {
+        var btn = document.getElementById("getAddrBtn");
+        btn.disabled = true;
+        btn.textContent = "Fetching...";
         try {
-            miniweb_MdsCmd("getaddress", function(res) {
+            MDS.cmd("getaddress", function(res) {
+                btn.disabled = false;
+                btn.textContent = "Get My Address";
                 if (res && res.status && res.response) {
-                    document.getElementById("addressInput").value = res.response.miniaddress;
+                    var addr = res.response.miniaddress || res.response.address || "";
+                    if (addr) {
+                        document.getElementById("addressInput").value = addr;
+                    } else {
+                        showStatus("Could not read address. Enter it manually.", false);
+                    }
                 } else {
                     showStatus("Could not get address. Enter it manually.", false);
                 }
             });
         } catch(e) {
-            showStatus("MDS bridge not available. Enter your address manually.", false);
+            btn.disabled = false;
+            btn.textContent = "Get My Address";
+            showStatus("MDS not available here. Enter your address manually.", false);
         }
     }
 
@@ -153,41 +165,18 @@
 
         var url = FAUCET_API + "?address=" + encodeURIComponent(addr);
 
-        try {
-            miniweb_NetGET(url, function(res) {
-                btn.disabled = false;
-                btn.textContent = "Request Minima";
-                try {
-                    var data;
-                    if (typeof res === "string") {
-                        data = JSON.parse(res);
-                    } else if (res && res.response) {
-                        data = (typeof res.response === "string") ? JSON.parse(res.response) : res.response;
-                    } else if (res && res.message) {
-                        data = res;
-                    } else {
-                        showStatus("Unexpected response from faucet.", false);
-                        return;
-                    }
-                    showStatus(data.message, data.status);
-                } catch(e) {
-                    showStatus("Failed to reach the faucet. Try again later.", false);
-                }
-            });
-        } catch(e) {
-            fetch(url)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                btn.disabled = false;
-                btn.textContent = "Request Minima";
-                showStatus(data.message, data.status);
-            })
-            .catch(function() {
-                btn.disabled = false;
-                btn.textContent = "Request Minima";
-                showStatus("Failed to reach the faucet. Try again later.", false);
-            });
-        }
+        fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.disabled = false;
+            btn.textContent = "Request Minima";
+            showStatus(data.message, data.status);
+        })
+        .catch(function() {
+            btn.disabled = false;
+            btn.textContent = "Request Minima";
+            showStatus("Failed to reach the faucet. Try again later.", false);
+        });
     }
     </script>
 </body>
