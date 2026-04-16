@@ -125,6 +125,16 @@
             cursor: not-allowed;
             transform: none;
         }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+        .btn-secondary:hover {
+            border-color: rgba(247,147,26,0.3);
+            color: var(--text);
+        }
         .status {
             margin-top: 16px;
             padding: 12px 16px;
@@ -170,10 +180,11 @@
             <p class="subtitle">Receive 0.0001 Minima to try out the blockchain</p>
 
             <div class="input-group">
-                <label>Your Minima Address</label>
-                <input type="text" id="addressInput" placeholder="0x... or Mx..." />
+                <label>Minima Address</label>
+                <input type="text" id="addressInput" placeholder="Paste an address or use button below" />
             </div>
 
+            <button class="btn btn-secondary" id="getAddrBtn" onclick="getMyAddress()">Get My Address</button>
             <button class="btn" id="requestBtn" onclick="requestMinima()">Request Minima</button>
 
             <div class="status" id="statusBox"></div>
@@ -192,15 +203,30 @@
 
     MDS.init(function(msg) {
         if (msg.event === "inited") {
-            MDS.cmd("getaddress", function(res) {
-                MDS.log("getaddress response: " + JSON.stringify(res));
-                if (res.status && res.response) {
-                    var addr = res.response.miniaddress || res.response.address || "";
-                    document.getElementById("addressInput").value = addr;
-                }
-            });
+            MDS.log("Faucet MiniDapp v1.0.5 ready");
         }
     });
+
+    function getMyAddress() {
+        var btn = document.getElementById("getAddrBtn");
+        btn.disabled = true;
+        btn.textContent = "Fetching...";
+        MDS.cmd("getaddress", function(res) {
+            btn.disabled = false;
+            btn.textContent = "Get My Address";
+            MDS.log("getaddress response: " + JSON.stringify(res));
+            if (res.status && res.response) {
+                var addr = res.response.miniaddress || res.response.address || "";
+                if (addr) {
+                    document.getElementById("addressInput").value = addr;
+                } else {
+                    showStatus("Could not read address from response.", false);
+                }
+            } else {
+                showStatus("Failed to get address. Try again.", false);
+            }
+        });
+    }
 
     function showStatus(msg, isSuccess) {
         var box = document.getElementById("statusBox");
