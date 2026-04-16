@@ -193,8 +193,10 @@
     MDS.init(function(msg) {
         if (msg.event === "inited") {
             MDS.cmd("getaddress", function(res) {
+                MDS.log("getaddress response: " + JSON.stringify(res));
                 if (res.status && res.response) {
-                    document.getElementById("addressInput").value = res.response.miniaddress;
+                    var addr = res.response.miniaddress || res.response.address || "";
+                    document.getElementById("addressInput").value = addr;
                 }
             });
         }
