@@ -122,6 +122,20 @@
 
     <script>
     var FAUCET_API = "https://eurobuddha.com/faucet/api/request";
+    var HAS_MDS = false;
+
+    /* Wait for MDS to init, same pattern as staticMLS lint */
+    MDS.init(function(msg) {
+        if (msg.event === "inited") {
+            HAS_MDS = true;
+        }
+    });
+    setTimeout(function() { if (!HAS_MDS) { HAS_MDS = false; } }, 3000);
+
+    function mdsCmd(cmd, cb) {
+        if (!HAS_MDS) { cb(null); return; }
+        try { MDS.cmd(cmd, function(r) { cb(r && r.status ? r : null); }); } catch(e) { cb(null); }
+    }
 
     function showStatus(msg, isSuccess) {
         var box = document.getElementById("statusBox");
@@ -133,26 +147,20 @@
         var btn = document.getElementById("getAddrBtn");
         btn.disabled = true;
         btn.textContent = "Fetching...";
-        try {
-            miniweb_MdsCmd("getaddress", function(res) {
-                btn.disabled = false;
-                btn.textContent = "Get My Address";
-                if (res && res.status && res.response) {
-                    var addr = res.response.miniaddress || res.response.address || "";
-                    if (addr) {
-                        document.getElementById("addressInput").value = addr;
-                    } else {
-                        showStatus("Could not read address. Enter it manually.", false);
-                    }
-                } else {
-                    showStatus("Could not get address. Enter it manually.", false);
-                }
-            });
-        } catch(e) {
+        mdsCmd("getaddress", function(res) {
             btn.disabled = false;
             btn.textContent = "Get My Address";
-            showStatus("Enter your address manually.", false);
-        }
+            if (res && res.response) {
+                var addr = res.response.miniaddress || res.response.address || "";
+                if (addr) {
+                    document.getElementById("addressInput").value = addr;
+                } else {
+                    showStatus("Could not read address. Enter it manually.", false);
+                }
+            } else {
+                showStatus("Could not get address. Enter it manually.", false);
+            }
+        });
     }
 
     function requestMinima() {
