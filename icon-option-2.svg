@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#ffffff"/>
+
+  <!-- Wall mount plate -->
+  <rect x="70" y="100" width="30" height="80" rx="4" fill="none" stroke="#1a1a1a" stroke-width="6"/>
+  <line x1="85" y1="115" x2="85" y2="165" stroke="#1a1a1a" stroke-width="3" opacity="0.3"/>
+
+  <!-- Horizontal pipe -->
+  <rect x="95" y="118" width="160" height="44" rx="4" fill="none" stroke="#1a1a1a" stroke-width="6"/>
+
+  <!-- Valve housing -->
+  <path d="M250 108 L290 108 L295 118 L295 162 L290 172 L250 172 L245 162 L245 118Z"
+        fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- T-handle on top -->
+  <line x1="270" y1="108" x2="270" y2="68" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
+  <line x1="240" y1="68" x2="300" y2="68" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Spout - elegant curved -->
+  <path d="M252 172 L252 235 Q252 280 290 280 L370 280"
+        fill="none" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M288 172 L288 215 Q288 245 315 245 L370 245"
+        fill="none" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Spout lip -->
+  <path d="M370 240 L380 240 L380 285 L370 285"
+        fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Drip -->
+  <circle cx="375" cy="305" r="4" fill="#1a1a1a"/>
+  <circle cx="375" cy="320" r="3" fill="#1a1a1a" opacity="0.6"/>
+
+  <!-- Large teardrop -->
+  <path d="M375 340 C375 340 330 395 330 435 C330 468 350 488 375 488 C400 488 420 468 420 435 C420 395 375 340 375 340Z"
+        fill="none" stroke="#1a1a1a" stroke-width="6"/>
+
+  <!-- Minima logo inside drop -->
+  <g transform="translate(354,430) scale(1.0)">
+    <polygon fill="#1a1a1a" points="32.8 10.1 31 17.9 28.8 8.5 20.9 5.3 18.7 14.7 16.8 3.7 8.9 .5 .7 36.5 9.4 36.5 11.9 25.5 13.8 36.5 22.4 36.5 24.6 27.1 26.8 36.5 35.5 36.5 40.7 13.3 32.8 10.1"/>
+  </g>
+
+  <!-- Water ripple at bottom -->
+  <ellipse cx="375" cy="492" rx="30" ry="4" fill="none" stroke="#1a1a1a" stroke-width="2" opacity="0.3"/>
+</svg>

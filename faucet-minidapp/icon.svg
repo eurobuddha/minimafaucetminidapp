@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#ffffff"/>
+
+  <!-- Wide pipe mouth centered, coming from top -->
+  <path d="M160 0 L160 95 Q160 115 180 115 L332 115 Q352 115 352 95 L352 0"
+        fill="#1a1a1a"/>
+  <!-- Inner pipe opening -->
+  <rect x="178" y="100" width="156" height="20" rx="4" fill="#ffffff"/>
+  <!-- Pipe rim / lip -->
+  <rect x="148" y="108" width="216" height="18" rx="6" fill="#1a1a1a"/>
+  <!-- Highlight on pipe -->
+  <rect x="240" y="15" width="16" height="85" rx="8" fill="#ffffff" opacity="0.12"/>
+
+  <!-- Small drip -->
+  <circle cx="256" cy="150" r="7" fill="#1a1a1a"/>
+
+  <!-- BIG teardrop - pushed up closer, fills more of the square -->
+  <path d="M256 178
+           C256 178 135 330 135 400
+           C135 468 190 505 256 505
+           C322 505 377 468 377 400
+           C377 330 256 178 256 178Z"
+        fill="none" stroke="#1a1a1a" stroke-width="7"/>
+
+  <!-- Minima logo inside drop - large, centered -->
+  <g transform="translate(194,355) scale(3.0)">
+    <polygon fill="#1a1a1a" points="32.8 10.1 31 17.9 28.8 8.5 20.9 5.3 18.7 14.7 16.8 3.7 8.9 .5 .7 36.5 9.4 36.5 11.9 25.5 13.8 36.5 22.4 36.5 24.6 27.1 26.8 36.5 35.5 36.5 40.7 13.3 32.8 10.1"/>
+  </g>
+</svg>
