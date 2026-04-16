@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faucet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.06);
+            --text: #e8e6e3;
+            --text-dim: rgba(232,230,227,0.55);
+            --accent: #f7931a;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .container { max-width: 420px; width: 100%; }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(20px);
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            padding: 4px 12px;
+            background: rgba(247,147,26,0.08);
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        .badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+        .subtitle { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 24px; font-weight: 300; }
+        label {
+            display: block; font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-dim); margin-bottom: 8px;
+        }
+        .input-group { margin-bottom: 16px; }
+        input[type="text"] {
+            width: 100%; padding: 12px 16px;
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text);
+            font-family: monospace; font-size: 0.8rem; outline: none;
+        }
+        input[type="text"]:focus { border-color: rgba(247,147,26,0.3); }
+        input[type="text"]::placeholder { color: rgba(255,255,255,0.2); }
+        .btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--accent), #ff5e3a);
+            border: none; border-radius: 10px; color: #fff;
+            font-family: 'Manrope', sans-serif; font-size: 0.9rem;
+            font-weight: 600; cursor: pointer;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status {
+            margin-top: 16px; padding: 12px 16px; border-radius: 10px;
+            font-size: 0.8rem; line-height: 1.5; display: none;
+        }
+        .status.show { display: block; }
+        .status.success { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: var(--success); }
+        .status.error { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--error); }
+        .info {
+            margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+            font-size: 0.75rem; color: var(--text-dim); line-height: 1.7;
+        }
+        .info strong { color: var(--text); font-weight: 500; }
+        .footer { text-align: center; margin-top: 20px; font-size: 0.65rem; color: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="badge">Minima Faucet</div>
+            <h1>Get Free Minima</h1>
+            <p class="subtitle">Receive 0.0001 Minima to try out the blockchain</p>
+            <div class="input-group">
+                <label>Your Minima Address</label>
+                <input type="text" id="addressInput" placeholder="0x... or Mx..." />
+            </div>
+            <button class="btn" id="requestBtn" onclick="requestMinima()">Request Minima</button>
+            <button class="btn" id="getAddrBtn" onclick="getMyAddress()" style="margin-top:8px;background:rgba(255,255,255,0.05);color:var(--text-dim);">Auto-fill My Address</button>
+            <div class="status" id="statusBox"></div>
+            <div class="info">
+                <strong>How it works:</strong> This faucet distributes a tiny amount of real Minima.
+                There is a short cooldown between requests. The value is very small, but enough to
+                try creating custom tokens and testing transactions.
+            </div>
+        </div>
+        <div class="footer">eurobuddha &middot; Minima Ecosystem</div>
+    </div>
+
+    <script>
+    var FAUCET_API = "https://eurobuddha.com/faucet/api/request";
+
+    function showStatus(msg, isSuccess) {
+        var box = document.getElementById("statusBox");
+        box.textContent = msg;
+        box.className = "status show " + (isSuccess ? "success" : "error");
+    }
+
+    function getMyAddress() {
+        try {
+            miniweb_MdsCmd("getaddress", function(res) {
+                if (res && res.status && res.response) {
+                    document.getElementById("addressInput").value = res.response.miniaddress;
+                } else {
+                    showStatus("Could not get address. Enter it manually.", false);
+                }
+            });
+        } catch(e) {
+            showStatus("MDS bridge not available. Enter your address manually.", false);
+        }
+    }
+
+    function requestMinima() {
+        var addr = document.getElementById("addressInput").value.trim();
+        if (!addr) {
+            showStatus("Please enter a Minima address.", false);
+            return;
+        }
+        var btn = document.getElementById("requestBtn");
+        btn.disabled = true;
+        btn.textContent = "Requesting...";
+
+        var url = FAUCET_API + "?address=" + encodeURIComponent(addr);
+
+        try {
+            miniweb_NetGET(url, function(res) {
+                btn.disabled = false;
+                btn.textContent = "Request Minima";
+                try {
+                    var data = JSON.parse(res);
+                    showStatus(data.message, data.status);
+                } catch(e) {
+                    showStatus("Failed to reach the faucet. Try again later.", false);
+                }
+            });
+        } catch(e) {
+            fetch(url)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                btn.disabled = false;
+                btn.textContent = "Request Minima";
+                showStatus(data.message, data.status);
+            })
+            .catch(function() {
+                btn.disabled = false;
+                btn.textContent = "Request Minima";
+                showStatus("Failed to reach the faucet. Try again later.", false);
+            });
+        }
+    }
+    </script>
+</body>
+</html>
