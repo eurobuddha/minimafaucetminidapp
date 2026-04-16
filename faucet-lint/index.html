@@ -132,7 +132,7 @@
         btn.disabled = true;
         btn.textContent = "Fetching...";
         try {
-            MDS.cmd("getaddress", function(res) {
+            miniweb_MdsCmd("getaddress", function(res) {
                 btn.disabled = false;
                 btn.textContent = "Get My Address";
                 if (res && res.status && res.response) {
@@ -149,7 +149,7 @@
         } catch(e) {
             btn.disabled = false;
             btn.textContent = "Get My Address";
-            showStatus("MDS not available here. Enter your address manually.", false);
+            showStatus("Enter your address manually.", false);
         }
     }
 
